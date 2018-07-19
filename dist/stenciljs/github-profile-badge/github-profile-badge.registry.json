@@ -1,0 +1,13 @@
+{
+  "namespace": "GithubProfileBadge",
+  "fsNamespace": "github-profile-badge",
+  "loader": "../github-profile-badge.js",
+  "global": "github-profile-badge.global.js",
+  "core": "github-profile-badge.ubxjdkuy.js",
+  "corePolyfilled": "github-profile-badge.bqdpusnp.js",
+  "components": {
+    "github-profile-badge": {
+      "$": "vjrylnsn"
+    }
+  }
+}

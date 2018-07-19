@@ -1,0 +1,36 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/Cellar/yarn/1.2.1/libexec/bin/yarn.js
+
+PATH: 
+  /usr/local/Cellar/php@7.0/7.0.30/bin:/Users/thangman22/.Pokemon-Terminal:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/go/bin:/Users/thangman22/Documents/google-cloud-sdk/bin/:/Users/thangman22/Documents/gactions:/Users/thangman22/go
+
+Yarn version: 
+  1.2.1
+
+Node version: 
+  9.7.1
+
+Platform: 
+  darwin x64
+
+npm manifest: 
+  {
+      "dependencies": {
+          "@polymer/lit-element": "^0.5.2",
+      }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  SyntaxError: /Users/thangman22/Desktop/web/single-component-test/dist/lit-element/package.json: Unexpected token } in JSON at position 70
+      at JSON.parse (<anonymous>)
+      at /usr/local/Cellar/yarn/1.2.1/libexec/lib/cli.js:770:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/Cellar/yarn/1.2.1/libexec/lib/cli.js:92:30)
+      at /usr/local/Cellar/yarn/1.2.1/libexec/lib/cli.js:103:13
+      at <anonymous>

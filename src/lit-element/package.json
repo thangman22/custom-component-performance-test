@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "dependencies": {
+    "@polymer/lit-element": "^0.5.2",
+    "polymer-cli": "^1.7.0-pre.17"
+  },
+  "devDependencies": {
+    "rollup-plugin-node-resolve": "^3.3.0"
+  }
+}
