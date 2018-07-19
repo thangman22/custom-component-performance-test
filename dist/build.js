@@ -101,7 +101,7 @@ function genarateTemplate(nameSpace) {
                 domContentComplete: 0.0,
                 lib: nameSpace
             }
-            let browser = await puppeteer.launch()
+            let browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] })
             let page = await browser.newPage()
             let firstCreate = true
             page.on('console', msg => {
