@@ -18,7 +18,7 @@ class GithubProfileBadge extends HTMLElement {
 
     async renderTemplate(username) {
         let profile = await this.fetchProfile(username)
-
+        
         performance.mark('create-component-mark-start')
         let template = this.createTemplate(profile)
         this.shadowRoot.innerHTML = template
@@ -180,7 +180,7 @@ class GithubProfileBadge extends HTMLElement {
                         </li>
                         <li>
                             <a href="${profile.url}" target="_blank" id="repos-container" title="Number Of Repositoriy">
-                                <i>${profil77e.repos}</i>
+                                <i>${profile.repos}</i>
                                 <span>Repositoriy</span>
                             </a>
                         </li>
