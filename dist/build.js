@@ -107,7 +107,6 @@ function genarateTemplate(nameSpace) {
             let firstCreate = true
             page.on('console', msg => {
                 let consoleText = msg.text()
-                console.log(consoleText)
                 if (consoleText.indexOf('Create Component') !== -1 || consoleText.indexOf('Update Component') !== -1) {
                     if (firstCreate) {
                         performanceObject.firstCreateComponent = parseFloat(consoleText.replace('Create Component ', ''))
