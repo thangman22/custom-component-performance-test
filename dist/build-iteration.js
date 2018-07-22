@@ -1,7 +1,7 @@
 const fs = require('fs')
 const signale = require('signale')
 const nameSpaces = ['lit-element', 'stenciljs', 'vanilla', 'vanilla-shadow-dom', 'vuejs']
-const log_file = fs.createWriteStream(__dirname + '/debug.log', { flags: 'a+' })
+const log_file = fs.createWriteStream(__dirname + '/debug-iteration.log', { flags: 'a+' })
 const puppeteer = require('puppeteer')
 
 const express = require("express")
@@ -110,8 +110,6 @@ function genarateTemplate(nameSpace, iteration) {
 
             let performanceObject = {
                 iteration: i,
-                firstCreateComponent: 0.0,
-                UpdateComponent: 0.0,
                 firstPaint: 0.0,
                 firstContentfulPaint: 0.0,
                 domContentLoad: 0.0,
@@ -125,17 +123,6 @@ function genarateTemplate(nameSpace, iteration) {
             
             page.on('console', msg => {
                 let consoleText = msg.text()
-
-                if (consoleText.indexOf('Create Component') !== -1 || consoleText.indexOf('Update Component') !== -1) {
-                    if (firstCreate) {
-                        performanceObject.firstCreateComponent = parseFloat(consoleText.replace('Create Component ', ''))
-                        signale.debug('First create time ' + consoleText.replace('Create Component ', '') + ' ms')
-                        firstCreate = false
-                    } else {
-                        performanceObject.UpdateComponent = parseFloat(consoleText.replace('Create Component ', '').replace('Update Component ', ''))
-                        signale.debug('Update time ' + consoleText.replace('Create Component ', '').replace('Update Component ', '') + ' ms')
-                    }
-                }
 
                 if (consoleText.indexOf('first-paint ') !== -1) {
                     performanceObject.firstPaint = parseFloat(consoleText.replace('first-paint ', ''))
@@ -160,8 +147,7 @@ function genarateTemplate(nameSpace, iteration) {
 
             signale.complete('Open URL http://localhost:3000/')
             await page.goto('http://localhost:3000/')
-            signale.pending(`Waiting ${nameSpace} component update... 15s`)
-            await page.waitFor(15000)
+            await page.waitFor(5000)
             await browser.close()
             result[nameSpace].push(performanceObject)
             signale.complete(`Prformance Information for ${nameSpace} ${JSON.stringify(performanceObject)}`)
