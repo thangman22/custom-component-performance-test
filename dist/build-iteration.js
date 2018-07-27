@@ -102,7 +102,7 @@ function genarateTemplate(nameSpace, iteration) {
     let result = {}
     for (nameSpace of nameSpaces) {
         result[nameSpace] = []
-        for (let i = 1; i <= 2000; i++) {
+        for (let i = 1; i <= 1000; i++) {
             signale.debug(`Start testing for ${nameSpace} ${i} Loop...`)
             signale.complete(`Genrated Template ${nameSpace} ${i} Loop`)
             await genarateTemplate(nameSpace, i)
@@ -148,6 +148,7 @@ function genarateTemplate(nameSpace, iteration) {
             signale.complete('Open URL http://localhost:3000/')
             await page.goto('http://localhost:3000/')
             await page.waitFor(5000)
+            await page.screenshot({ path: 'screen.png', fullPage: true })
             await browser.close()
             result[nameSpace].push(performanceObject)
             signale.complete(`Prformance Information for ${nameSpace} ${JSON.stringify(performanceObject)}`)
