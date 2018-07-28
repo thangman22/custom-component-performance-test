@@ -1,6 +1,6 @@
 const fs = require('fs')
 const signale = require('signale')
-//const nameSpaces = ['lit-element', 'stenciljs', 'vanilla', 'vanilla-shadow-dom', 'vuejs']
+// const nameSpaces = ['lit-element', 'stenciljs', 'vanilla', 'vanilla-shadow-dom', 'vuejs']
 const nameSpaces = ['vanilla-shadow-dom']
 const log_file = fs.createWriteStream(__dirname + '/debug.log', { flags: 'a+' })
 const puppeteer = require('puppeteer')
