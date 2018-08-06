@@ -1,5 +1,6 @@
 const fs = require('fs')
 const signale = require('signale')
+const compression = require('compression')
 // const nameSpaces = ['lit-element', 'stenciljs', 'vanilla', 'vanilla-shadow-dom', 'vuejs']
 const nameSpaces = ['vanilla-shadow-dom']
 const log_file = fs.createWriteStream(__dirname + '/debug.log', { flags: 'a+' })
@@ -76,81 +77,90 @@ function genarateTemplate(nameSpace) {
     })
 }
 
+
+
 (async () => {
     
     app.get('/', function (_, res) {
         res.sendFile(path.join(__dirname + '/index.html'))
     })
 
+    app.get('/build', async function (req, res) {
+        await genarateTemplate(req.query.nameSpace)
+        res.sendFile(path.join(__dirname + '/index.html'))
+    })
+    app.use(compression())
     app.use(express.static('./'))
-    app.listen(3000)
-    let result = {}  
-    for (nameSpace of nameSpaces) {
-        result[nameSpace] = []
-        signale.debug(`Start testing for ${nameSpace} ...`)
-        signale.complete(`Genrated Template ${nameSpace}`)
-        await genarateTemplate(nameSpace)
-        signale.watch(`Serving file for ${nameSpace} ...`)
+    app.listen(3001)
+    if(process.argv[2] === 'test'){
+        let result = {}
+        for (nameSpace of nameSpaces) {
+            result[nameSpace] = []
+            signale.debug(`Start testing for ${nameSpace} ...`)
+            signale.complete(`Genrated Template ${nameSpace}`)
+            await genarateTemplate(nameSpace)
+            signale.watch(`Serving file for ${nameSpace} ...`)
 
-        for(i = 1; i <= 2000; i++) {
-            let performanceObject = {
-                firstCreateComponent: 0.0,
-                UpdateComponent: 0.0,
-                firstPaint: 0.0,
-                firstContentfulPaint: 0.0,
-                domContentLoad: 0.0,
-                domContentComplete: 0.0,
-                lib: nameSpace
-            }
-            let browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] })
-            let page = await browser.newPage()
-            let firstCreate = true
-            page.on('console', msg => {
-                let consoleText = msg.text()
-                if (consoleText.indexOf('Create Component') !== -1 || consoleText.indexOf('Update Component') !== -1) {
-                    if (firstCreate) {
-                        performanceObject.firstCreateComponent = parseFloat(consoleText.replace('Create Component ', ''))
-                        signale.debug('First create time ' + consoleText.replace('Create Component ','') + ' ms')
-                        firstCreate = false
-                    } else {
-                        performanceObject.UpdateComponent = parseFloat(consoleText.replace('Create Component ', '').replace('Update Component ', ''))
-                        signale.debug('Update time ' + consoleText.replace('Create Component ', '').replace('Update Component ', '') + ' ms')
+            for (i = 1; i <= 2000; i++) {
+                let performanceObject = {
+                    firstCreateComponent: 0.0,
+                    UpdateComponent: 0.0,
+                    firstPaint: 0.0,
+                    firstContentfulPaint: 0.0,
+                    domContentLoad: 0.0,
+                    domContentComplete: 0.0,
+                    lib: nameSpace
+                }
+                let browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] })
+                let page = await browser.newPage()
+                let firstCreate = true
+                page.on('console', msg => {
+                    let consoleText = msg.text()
+                    if (consoleText.indexOf('Create Component') !== -1 || consoleText.indexOf('Update Component') !== -1) {
+                        if (firstCreate) {
+                            performanceObject.firstCreateComponent = parseFloat(consoleText.replace('Create Component ', ''))
+                            signale.debug('First create time ' + consoleText.replace('Create Component ', '') + ' ms')
+                            firstCreate = false
+                        } else {
+                            performanceObject.UpdateComponent = parseFloat(consoleText.replace('Create Component ', '').replace('Update Component ', ''))
+                            signale.debug('Update time ' + consoleText.replace('Create Component ', '').replace('Update Component ', '') + ' ms')
+                        }
                     }
-                }
-                
-                if (consoleText.indexOf('first-paint ') !== -1) {
-                    performanceObject.firstPaint = parseFloat(consoleText.replace('first-paint ', ''))
-                    signale.debug('First paint ' + consoleText.replace('first-paint ', '') + ' ms')
-                }
 
-                if (consoleText.indexOf('first-contentful-paint ') !== -1) {
-                    performanceObject.firstContentfulPaint = parseFloat(consoleText.replace('first-contentful-paint ', ''))
-                    signale.debug('First Contentful paint ' + consoleText.replace('first-contentful-paint ', '') + ' ms')
-                }
+                    if (consoleText.indexOf('first-paint ') !== -1) {
+                        performanceObject.firstPaint = parseFloat(consoleText.replace('first-paint ', ''))
+                        signale.debug('First paint ' + consoleText.replace('first-paint ', '') + ' ms')
+                    }
 
-                if (consoleText.indexOf('dcl ') !== -1) {
-                    performanceObject.domContentLoad = parseFloat(consoleText.replace('dcl ', ''))
-                    signale.debug('Dom Content load ' + consoleText.replace('dcl ', '') + ' ms')
-                }
+                    if (consoleText.indexOf('first-contentful-paint ') !== -1) {
+                        performanceObject.firstContentfulPaint = parseFloat(consoleText.replace('first-contentful-paint ', ''))
+                        signale.debug('First Contentful paint ' + consoleText.replace('first-contentful-paint ', '') + ' ms')
+                    }
 
-                if (consoleText.indexOf('dom load completed ') !== -1) {
-                    performanceObject.domContentComplete = parseFloat(consoleText.replace('dom load completed ', ''))
-                    signale.debug('Dom Content load completed ' + consoleText.replace('dom load completed ', '') + ' ms')
-                }
-            })
-            
-            signale.complete('Open URL http://localhost:3000/')
-            await page.goto('http://localhost:3000/')
-            signale.pending(`Waiting ${nameSpace} component update... 15s`)
-            await page.waitFor(15000)
-            await browser.close()
-            result[nameSpace].push(performanceObject)
-            signale.complete(`Prformance Information for ${nameSpace} ${JSON.stringify(performanceObject)}`)
-            log_file.write(JSON.stringify(performanceObject) + '\n')
-            signale.success('Close browser')
+                    if (consoleText.indexOf('dcl ') !== -1) {
+                        performanceObject.domContentLoad = parseFloat(consoleText.replace('dcl ', ''))
+                        signale.debug('Dom Content load ' + consoleText.replace('dcl ', '') + ' ms')
+                    }
+
+                    if (consoleText.indexOf('dom load completed ') !== -1) {
+                        performanceObject.domContentComplete = parseFloat(consoleText.replace('dom load completed ', ''))
+                        signale.debug('Dom Content load completed ' + consoleText.replace('dom load completed ', '') + ' ms')
+                    }
+                })
+
+                signale.complete('Open URL http://localhost:3000/')
+                await page.goto('http://localhost:3000/')
+                signale.pending(`Waiting ${nameSpace} component update... 15s`)
+                await page.waitFor(15000)
+                await browser.close()
+                result[nameSpace].push(performanceObject)
+                signale.complete(`Prformance Information for ${nameSpace} ${JSON.stringify(performanceObject)}`)
+                log_file.write(JSON.stringify(performanceObject) + '\n')
+                signale.success('Close browser')
+            }
         }
     }
-    
+ 
 })()
 
 
