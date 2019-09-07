@@ -3,9 +3,12 @@
     "build": "rollup -c"
   },
   "dependencies": {
-    "@polymer/lit-element": "^0.5.2"
+    "lit-element": "^2.0.0"
   },
   "devDependencies": {
-    "rollup-plugin-node-resolve": "^3.3.0"
+    "rollup": "0.66.6",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-terser": "3.0.0",
+    "rollup-plugin-minify-html-literals": "1.0.7"
   }
 }

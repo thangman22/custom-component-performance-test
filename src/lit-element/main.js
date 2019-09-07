@@ -1,6 +1,7 @@
 'use strict';
 
-import { LitElement, html } from '@polymer/lit-element';
+import { LitElement, html } from 'lit-element';
+import { ifDefined } from 'lit-html/directives/if-defined.js';
 
 class GithubProfileBadge extends LitElement {
 
@@ -15,10 +16,10 @@ class GithubProfileBadge extends LitElement {
         super.connectedCallback()
         if (this.username) {
             this.profile = await this.fetchProfile(this.username)
-            this._invalidateProperties()
+            this.requestUpdate()
             setTimeout(async () => {
                 this.profile = await this.fetchProfile('GoogleChromeLabs')
-                this._invalidateProperties()
+                this.requestUpdate()
             }, 10000)
         }
     }
@@ -38,7 +39,7 @@ class GithubProfileBadge extends LitElement {
         }
     }
 
-    _didRender() {
+    updated() {
         performance.mark('create-component-mark-end')
         performance.measure('create-component-mark', 'create-component-mark-start', 'create-component-mark-end')
         let measures = performance.getEntriesByName('create-component-mark')
@@ -47,7 +48,7 @@ class GithubProfileBadge extends LitElement {
         console.log(`Create Component ${measures[0].duration.toFixed(2)}`)
     }
 
-    _render() {
+    render() {
         performance.mark('create-component-mark-start')
         return html`<style>
             @import url(https://fonts.googleapis.com/css?family=Titillium+Web:400,700,600);
@@ -137,7 +138,7 @@ class GithubProfileBadge extends LitElement {
             <section id="github--profile">
                 <div id="github--profile__info">
                     <a href="${this.profile.url}" target="_blank" title="${this.profile.name}" id="avatar">
-                        <img src="${this.profile.avatarUrl}" alt="${this.profile.username}"/>
+                        <img src="${ifDefined(this.profile.avatarUrl)}" alt="${this.profile.username}"/>
                     </a>
                     <h2>
                         <a href="${this.profile.url}" title="${this.profile.username}" target="_blank">@${this.profile.username}</a>
